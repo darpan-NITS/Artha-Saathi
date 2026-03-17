@@ -1,13 +1,17 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
 from dotenv import load_dotenv
 import os
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 load_dotenv()
-# Verify key loads correctly
-print("API Key loaded:", os.getenv("ANTHROPIC_API_KEY")[:10], "...")
 
-app = FastAPI(title="Artha-Saathi", version="0.1.0")
+api_key = os.getenv("ANTHROPIC_API_KEY")
+if api_key:
+    print("API Key loaded:", api_key[:10], "...")
+else:
+    print("WARNING: ANTHROPIC_API_KEY not found in .env")
+
+app = FastAPI(title="Artha-Saathi API", version="0.1.0")
 
 app.add_middleware(
     CORSMiddleware,
