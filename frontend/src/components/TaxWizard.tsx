@@ -1,4 +1,5 @@
 "use client"
+import { SkeletonCard, SkeletonChart } from "./Skeleton"
 import { useState, useEffect, useCallback } from "react"
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid,
@@ -49,12 +50,14 @@ export default function TaxWizard({ sessionId }: Props) {
   )
 
   if (loading) {
-    return (
-      <div className="flex items-center justify-center h-48 text-gray-400 text-sm">
-        Calculating your tax liability...
-      </div>
-    )
-  }
+  return (
+    <div className="space-y-4">
+      <SkeletonCard />
+      <SkeletonChart />
+      <SkeletonCard />
+    </div>
+  )
+}
 
   if (!data || data.error) {
     return (
