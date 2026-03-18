@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from routes.chat import router as chat_router
 from routes.health_score import router as health_score_router
 from agents.base import init_db
+from routes.fire import router as fire_router
 
 app = FastAPI(title="Artha-Saathi API", version="0.2.0")
 
@@ -20,6 +21,7 @@ app.add_middleware(
 init_db()
 app.include_router(chat_router, prefix="/api")
 app.include_router(health_score_router, prefix="/api")
+app.include_router(fire_router, prefix="/api")
 
 @app.get("/health")
 def health():
