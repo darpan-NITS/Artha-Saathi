@@ -48,3 +48,29 @@ export async function getFireScenario(
   if (!res.ok) throw new Error("Scenario fetch failed")
   return res.json()
 }
+
+export async function getTaxPlan(sessionId: string): Promise<any> {
+  const res = await fetch(`${BASE_URL}/tax/${sessionId}`)
+  if (!res.ok) throw new Error("Tax plan fetch failed")
+  return res.json()
+}
+
+export async function optimizeTax(
+  sessionId: string,
+  c80c: number,
+  c80d: number,
+  nps: number
+): Promise<any> {
+  const res = await fetch(`${BASE_URL}/tax/optimize`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      session_id: sessionId,
+      override_80c: c80c,
+      override_80d: c80d,
+      override_nps: nps,
+    }),
+  })
+  if (!res.ok) throw new Error("Tax optimization failed")
+  return res.json()
+}
