@@ -3,6 +3,7 @@ import { useState, useEffect } from "react"
 import HealthScoreCard from "./HealthScoreCard"
 import AgentTrace from "./AgentTrace"
 import FirePlanner from "./FirePlanner"
+import TaxWizard from "./TaxWizard"
 import { getHealthScore, getAgentTraces } from "@/lib/api"
 import { HealthScore, AgentTrace as AgentTraceType } from "@/types"
 
@@ -19,7 +20,7 @@ export default function DashboardPanel({
   const [healthScore, setHealthScore] = useState<HealthScore | null>(null)
   const [traces, setTraces] = useState<AgentTraceType[]>([])
   const [showTraces, setShowTraces] = useState(false)
-  const [activeTab, setActiveTab] = useState<"health" | "fire">("health")
+  const [activeTab, setActiveTab] = useState<"health" | "fire" | "tax">("health")
 
   useEffect(() => {
     if (!sessionId) return
@@ -32,8 +33,10 @@ export default function DashboardPanel({
   const formatValue = (key: string, value: any) => {
     const moneyKeys = ["income", "expense", "saving", "fund", "investment",
                        "debt", "emi", "cover", "corpus", "salary"]
-    if (typeof value === "number" &&
-        moneyKeys.some((k) => key.toLowerCase().includes(k))) {
+    if (
+      typeof value === "number" &&
+      moneyKeys.some((k) => key.toLowerCase().includes(k))
+    ) {
       return `₹${value.toLocaleString("en-IN")}`
     }
     if (typeof value === "boolean") return value ? "Yes" : "No"
@@ -44,32 +47,31 @@ export default function DashboardPanel({
     ([_, v]) => v !== null && v !== undefined
   )
 
+  const tabs = [
+    { key: "health", label: "Health Score" },
+    { key: "fire",   label: "FIRE Planner" },
+    { key: "tax",    label: "Tax Wizard" },
+  ] as const
+
   return (
     <div className="h-full overflow-y-auto px-6 py-4 space-y-4">
 
       {/* Header row */}
       <div className="flex items-center justify-between">
         <div className="flex gap-2">
-          <button
-            onClick={() => setActiveTab("health")}
-            className={`text-xs px-3 py-1.5 rounded-lg border transition-colors ${
-              activeTab === "health"
-                ? "bg-emerald-600 text-white border-emerald-600"
-                : "border-gray-200 text-gray-500 hover:bg-gray-50"
-            }`}
-          >
-            Health Score
-          </button>
-          <button
-            onClick={() => setActiveTab("fire")}
-            className={`text-xs px-3 py-1.5 rounded-lg border transition-colors ${
-              activeTab === "fire"
-                ? "bg-emerald-600 text-white border-emerald-600"
-                : "border-gray-200 text-gray-500 hover:bg-gray-50"
-            }`}
-          >
-            FIRE Planner
-          </button>
+          {tabs.map((tab) => (
+            <button
+              key={tab.key}
+              onClick={() => setActiveTab(tab.key)}
+              className={`text-xs px-3 py-1.5 rounded-lg border transition-colors ${
+                activeTab === tab.key
+                  ? "bg-emerald-600 text-white border-emerald-600"
+                  : "border-gray-200 text-gray-500 hover:bg-gray-50"
+              }`}
+            >
+              {tab.label}
+            </button>
+          ))}
         </div>
         {sessionId && (
           <button
@@ -81,7 +83,7 @@ export default function DashboardPanel({
         )}
       </div>
 
-      {/* Health Score Tab */}
+      {/* ── Health Score Tab ── */}
       {activeTab === "health" && (
         <>
           {healthScore ? (
@@ -129,7 +131,7 @@ export default function DashboardPanel({
         </>
       )}
 
-      {/* FIRE Tab */}
+      {/* ── FIRE Planner Tab ── */}
       {activeTab === "fire" && sessionId && (
         <FirePlanner sessionId={sessionId} />
       )}
@@ -139,7 +141,17 @@ export default function DashboardPanel({
         </div>
       )}
 
-      {/* Agent Trace */}
+      {/* ── Tax Wizard Tab ── */}
+      {activeTab === "tax" && sessionId && (
+        <TaxWizard sessionId={sessionId} />
+      )}
+      {activeTab === "tax" && !sessionId && (
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-6 text-sm text-amber-700 text-center">
+          Start a conversation first to see your tax analysis
+        </div>
+      )}
+
+      {/* ── Agent Trace (all tabs) ── */}
       {showTraces && traces.length > 0 && (
         <AgentTrace traces={traces} />
       )}
