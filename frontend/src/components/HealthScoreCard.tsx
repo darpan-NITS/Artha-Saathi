@@ -5,9 +5,7 @@ import {
 } from "recharts"
 import { HealthScore } from "@/types"
 
-interface Props {
-  score: HealthScore
-}
+interface Props { score: HealthScore }
 
 const LABELS: Record<string, string> = {
   emergency_fund: "Emergency Fund",
@@ -18,97 +16,113 @@ const LABELS: Record<string, string> = {
   retirement_readiness: "Retirement",
 }
 
+const GRADE_CONFIG = {
+  A: { bg: "from-emerald-500 to-teal-500",   light: "bg-emerald-50",  border: "border-emerald-200", text: "text-emerald-700" },
+  B: { bg: "from-blue-500 to-indigo-500",     light: "bg-blue-50",     border: "border-blue-200",    text: "text-blue-700"    },
+  C: { bg: "from-amber-400 to-orange-500",    light: "bg-amber-50",    border: "border-amber-200",   text: "text-amber-700"   },
+  D: { bg: "from-red-500 to-rose-500",        light: "bg-red-50",      border: "border-red-200",     text: "text-red-700"     },
+} as const
+
+const BAR_COLOR = (v: number) =>
+  v >= 70 ? "#059669" : v >= 40 ? "#f59e0b" : "#ef4444"
+
+const RADAR_COLOR = (grade: string) =>
+  ({ A: "#059669", B: "#3b82f6", C: "#f59e0b", D: "#ef4444" }[grade] ?? "#059669")
+
 export default function HealthScoreCard({ score }: Props) {
+  const grade = score.grade as keyof typeof GRADE_CONFIG
+  const cfg   = GRADE_CONFIG[grade] ?? GRADE_CONFIG.C
+
   const data = Object.entries(score.dimension_scores).map(([key, value]) => ({
-    subject: LABELS[key] || key,
+    subject: LABELS[key] ?? key,
     score: value,
     fullMark: 100,
   }))
 
-  const gradeColor = {
-    A: "text-emerald-600",
-    B: "text-blue-600",
-    C: "text-amber-600",
-    D: "text-red-600",
-  }[score.grade] || "text-gray-600"
-
-  const scoreBg = {
-    A: "bg-emerald-50 border-emerald-200",
-    B: "bg-blue-50 border-blue-200",
-    C: "bg-amber-50 border-amber-200",
-    D: "bg-red-50 border-red-200",
-  }[score.grade] || "bg-gray-50 border-gray-200"
-
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-5">
-      <div className="flex items-center justify-between mb-4">
-        <div>
-          <p className="text-xs text-gray-500 uppercase tracking-wide font-medium">
-            Money Health Score
-          </p>
-          <div className="flex items-baseline gap-2 mt-1">
-            <span className="text-4xl font-bold text-gray-800">
+    <div className="panel-card overflow-hidden">
+
+      {/* Gradient header */}
+      <div className={`bg-gradient-to-r ${cfg.bg} px-5 pt-5 pb-6`}>
+        <p className="text-xs font-semibold text-white/70 uppercase tracking-widest mb-1">
+          Money Health Score
+        </p>
+        <div className="flex items-end justify-between">
+          <div className="flex items-baseline gap-2">
+            <span className="text-6xl font-bold text-white leading-none">
               {score.overall_score}
             </span>
-            <span className="text-gray-400 text-sm">/100</span>
-            <span className={`text-2xl font-bold ${gradeColor}`}>
+            <span className="text-white/60 text-lg">/100</span>
+          </div>
+          <div className="text-right">
+            <div className="text-5xl font-bold text-white/90 leading-none">
               {score.grade}
-            </span>
-          </div>
-        </div>
-        <div className={`px-4 py-2 rounded-xl border text-sm font-medium ${scoreBg} ${gradeColor}`}>
-          {score.interpretation.split(".")[0]}
-        </div>
-      </div>
-
-      {/* Radar Chart */}
-      <div className="h-56">
-        <ResponsiveContainer width="100%" height="100%">
-          <RadarChart data={data}>
-            <PolarGrid stroke="#f0f0f0" />
-            <PolarAngleAxis
-              dataKey="subject"
-              tick={{ fontSize: 11, fill: "#6b7280" }}
-            />
-            <Radar
-              name="Score"
-              dataKey="score"
-              stroke="#059669"
-              fill="#059669"
-              fillOpacity={0.15}
-              strokeWidth={2}
-            />
-            <Tooltip
-              formatter={(value: number) => [`${value}/100`, "Score"]}
-            />
-          </RadarChart>
-        </ResponsiveContainer>
-      </div>
-
-      {/* Dimension bars */}
-      <div className="mt-4 space-y-2">
-        {Object.entries(score.dimension_scores).map(([key, value]) => (
-          <div key={key} className="flex items-center gap-3">
-            <span className="text-xs text-gray-500 w-28 shrink-0">
-              {LABELS[key]}
-            </span>
-            <div className="flex-1 bg-gray-100 rounded-full h-1.5">
-              <div
-                className={`h-1.5 rounded-full transition-all duration-700 ${
-                  value >= 70
-                    ? "bg-emerald-500"
-                    : value >= 40
-                    ? "bg-amber-500"
-                    : "bg-red-500"
-                }`}
-                style={{ width: `${value}%` }}
-              />
             </div>
-            <span className="text-xs font-medium text-gray-700 w-8 text-right">
-              {value}
-            </span>
+            <p className="text-white/70 text-xs mt-1">Grade</p>
           </div>
-        ))}
+        </div>
+        <p className="text-white/80 text-sm mt-3">
+          {score.interpretation}
+        </p>
+      </div>
+
+      <div className="px-5 pb-5 pt-4">
+        {/* Radar chart */}
+        <div className="h-52 -mx-2">
+          <ResponsiveContainer width="100%" height="100%">
+            <RadarChart data={data} margin={{ top: 8, right: 24, bottom: 8, left: 24 }}>
+              <PolarGrid stroke="#f0f0f0" />
+              <PolarAngleAxis
+                dataKey="subject"
+                tick={{ fontSize: 10, fill: "#9ca3af" }}
+              />
+              <Radar
+                name="Score"
+                dataKey="score"
+                stroke={RADAR_COLOR(grade)}
+                fill={RADAR_COLOR(grade)}
+                fillOpacity={0.12}
+                strokeWidth={2}
+              />
+              <Tooltip
+                contentStyle={{
+                  background: "white",
+                  border: "1px solid #f0f0f0",
+                  borderRadius: "10px",
+                  fontSize: "12px",
+                  boxShadow: "0 4px 12px rgb(0 0 0 / 0.08)"
+                }}
+                formatter={(v: number) => [`${v}/100`, "Score"]}
+              />
+            </RadarChart>
+          </ResponsiveContainer>
+        </div>
+
+        {/* Dimension bars */}
+        <div className="space-y-2.5 mt-2">
+          {Object.entries(score.dimension_scores).map(([key, value]) => (
+            <div key={key} className="flex items-center gap-3">
+              <span className="text-xs text-gray-500 w-32 shrink-0">
+                {LABELS[key]}
+              </span>
+              <div className="flex-1 bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                <div
+                  className="h-1.5 rounded-full transition-all duration-700"
+                  style={{
+                    width: `${value}%`,
+                    background: BAR_COLOR(value)
+                  }}
+                />
+              </div>
+              <span
+                className="text-xs font-semibold w-8 text-right"
+                style={{ color: BAR_COLOR(value) }}
+              >
+                {value}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   )
