@@ -74,6 +74,23 @@ export default function ChatPanel({ messages, onSend, loading }: Props) {
                 <p>• Any savings or investments you already have</p>
               </div>
             </div>
+            <div className="mt-4 pt-4 border-t border-gray-100">
+  <p className="text-xs text-center text-gray-400 mb-2">
+    Or start instantly with a demo persona
+  </p>
+  <button
+    onClick={() => onSend(
+      "I am Priya, 27 years old, working as a software engineer in Bangalore. " +
+      "I earn ₹75,000 per month and spend about ₹45,000. " +
+      "I have ₹80,000 in a savings account, no term insurance, " +
+      "and a ₹3 lakh group health insurance from my employer. " +
+      "I invest ₹5,000 in an ELSS fund monthly. What is my financial health?"
+    )}
+    className="w-full py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 text-white text-sm font-semibold hover:opacity-90 transition-opacity"
+  >
+    Try Demo — See Priya's Financial Future
+  </button>
+</div>
 
             <p className="text-xs text-center text-gray-400 mb-3">
               Or try one of these
