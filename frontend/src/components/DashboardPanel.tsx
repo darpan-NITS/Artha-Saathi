@@ -48,6 +48,7 @@ export default function DashboardPanel({
   )
 
   const tabs = [
+    { key: "shock",  label: "Future Shock 🔮" },
     { key: "health", label: "Health Score" },
     { key: "fire",   label: "FIRE Planner" },
     { key: "tax",    label: "Tax Wizard" },
