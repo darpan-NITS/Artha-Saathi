@@ -6,6 +6,7 @@ import FirePlanner from "./FirePlanner"
 import TaxWizard from "./TaxWizard"
 import { getHealthScore, getAgentTraces } from "@/lib/api"
 import { HealthScore, AgentTrace as AgentTraceType } from "@/types"
+import FutureShock from "./FutureShock"
 
 interface Props {
   sessionId: string | null
@@ -20,7 +21,7 @@ export default function DashboardPanel({
   const [healthScore, setHealthScore] = useState<HealthScore | null>(null)
   const [traces, setTraces] = useState<AgentTraceType[]>([])
   const [showTraces, setShowTraces] = useState(false)
-  const [activeTab, setActiveTab] = useState<"health" | "fire" | "tax">("health")
+  const [activeTab, setActiveTab] = useState<"shock" | "health" | "fire" | "tax">("shock")
 
   useEffect(() => {
     if (!sessionId) return
@@ -151,6 +152,21 @@ export default function DashboardPanel({
           Start a conversation first to see your tax analysis
         </div>
       )}
+      {/*FutureShock Tab*/}
+{activeTab === "shock" && sessionId && (
+  <FutureShock sessionId={sessionId} />
+)}
+{activeTab === "shock" && !sessionId && (
+  <div className="panel-card p-8 text-center">
+    <p className="text-3xl mb-3">🔮</p>
+    <p className="text-sm font-semibold text-gray-700 mb-1">
+      See your financial future in 60 seconds
+    </p>
+    <p className="text-xs text-gray-400">
+      Most Indians lose ₹40,000/year in avoidable taxes. Find out if you are one of them.
+    </p>
+  </div>
+)}
 
       {/* ── Agent Trace (all tabs) ── */}
       {showTraces && traces.length > 0 && (
