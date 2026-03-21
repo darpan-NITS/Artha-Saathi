@@ -10,6 +10,7 @@ from agents.base import init_db
 from routes.fire import router as fire_router
 from routes.tax import router as tax_router
 from routes.future_shock import router as future_shock_router
+from routes.whatsapp import router as whatsapp_router
 
 app = FastAPI(title="Artha-Saathi API", version="0.2.0")
 
@@ -26,6 +27,7 @@ app.include_router(health_score_router, prefix="/api")
 app.include_router(fire_router, prefix="/api")
 app.include_router(tax_router, prefix="/api")
 app.include_router(future_shock_router, prefix="/api")
+app.include_router(whatsapp_router, prefix="/api")
 
 @app.get("/health")
 def health():
