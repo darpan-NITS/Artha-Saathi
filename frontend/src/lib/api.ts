@@ -74,3 +74,8 @@ export async function optimizeTax(
   if (!res.ok) throw new Error("Tax optimization failed")
   return res.json()
 }
+export async function getFutureShock(sessionId: string): Promise<any> {
+  const res = await fetch(`${BASE_URL}/future-shock/${sessionId}`)
+  if (!res.ok) throw new Error("Future shock fetch failed")
+  return res.json()
+}
