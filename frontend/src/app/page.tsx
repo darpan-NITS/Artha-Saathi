@@ -47,18 +47,16 @@ export default function Home() {
   return (
     <main className="h-screen bg-gray-50 flex flex-col">
       {/* Top bar */}
-      <div className="bg-white border-b border-gray-100 px-6 py-3 flex items-center justify-between shrink-0">
-        <div className="flex items-center gap-2">
-          <span className="text-lg font-bold text-emerald-700">Artha</span>
-          <span className="text-lg font-bold text-gray-800">Saathi</span>
-          <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full ml-1">
-            AI Money Mentor
-          </span>
-        </div>
-        <p className="text-xs text-gray-400">
-          For educational purposes · Not SEBI-registered advice
-        </p>
-      </div>
+      <div className="flex items-center gap-2">
+  <span className="text-lg font-bold text-emerald-700">Artha</span>
+  <span className="text-lg font-bold text-gray-800">Saathi</span>
+  <span className="text-xs bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded-full ml-1">
+    AI Money Mentor
+  </span>
+  <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full flex items-center gap-1">
+    <span style={{fontSize: "10px"}}>💬</span> WhatsApp
+  </span>
+</div>
 
       {/* Main split layout */}
       <div className="flex-1 flex overflow-hidden">
