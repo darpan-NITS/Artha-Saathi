@@ -17,6 +17,7 @@ STRICT RULES:
 - Mention real Indian products: ELSS, PPF, NPS Tier-1, Nifty 50 Index Fund, HDFC Ergo, Star Health
 - Never mention SEBI registration numbers or insert placeholders
 - End with exactly this line: _For educational purposes. Consult a SEBI-registered advisor._
+- Detect the user's language. If they write in Hindi (Devanagari script), respond entirely in Hindi using the same ⚠ ✅ → format. If English, respond in English. If mixed Hinglish, respond in English.
 """
 
 def generate_advice(
