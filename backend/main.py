@@ -17,7 +17,12 @@ app = FastAPI(title="Artha-Saathi API", version="0.2.0")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=[
+        "http://localhost:3000",
+        "https://artha-saathi.vercel.app",
+        "https://*.vercel.app",
+    ],
+    allow_origin_regex="https://.*\\.vercel\\.app",
     allow_methods=["*"],
     allow_headers=["*"],
 )
