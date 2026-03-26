@@ -1,4 +1,5 @@
-const BASE_URL = "http://localhost:8000/api"
+const BASE_URL =
+  process.env.NEXT_PUBLIC_API_URL ?? "https://artha-saathi.onrender.com/api"
 
 export async function sendMessage(
   message: string,
@@ -74,6 +75,7 @@ export async function optimizeTax(
   if (!res.ok) throw new Error("Tax optimization failed")
   return res.json()
 }
+
 export async function getFutureShock(sessionId: string): Promise<any> {
   const res = await fetch(`${BASE_URL}/future-shock/${sessionId}`)
   if (!res.ok) throw new Error("Future shock fetch failed")
