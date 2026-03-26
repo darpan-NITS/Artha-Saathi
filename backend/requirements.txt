@@ -25,14 +25,11 @@ idna==3.11
 iniconfig==2.3.0
 jiter==0.13.0
 multidict==6.7.1
-<<<<<<< HEAD
 packaging==26.0
 pluggy==1.6.0
-=======
 networkx==3.4.2
 numpy==1.26.4
 Pillow==10.1.0
->>>>>>> 1e5a439a8bc5cdac16b5d6784a9650175a89501c
 propcache==0.4.1
 pydantic==2.12.5
 pydantic_core==2.41.5
