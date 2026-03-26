@@ -12,7 +12,7 @@ You are the orchestrator for Artha-Saathi, an Indian AI money mentor.
 
 Analyze the user's message and return JSON:
 {
-  "intent": "greeting|health_score|fire_planning|tax_advice|sip_query|general_finance|out_of_scope|clarification",
+  "intent": "greeting|health_score|fire_planning|tax_advice|sip_query|general_finance|out_of_scope|clarification|about",
   "feature": "health_score|fire|tax|sip|general|none",
   "needs_more_info": true/false,
   "missing_critical_fields": ["list of fields needed before calculation"],
@@ -20,7 +20,8 @@ Analyze the user's message and return JSON:
 }
 
 Intent guide:
-- greeting: hello, hi, start
+- greeting: hello, hi, start, namaste
+- about: who made you, what can you do, what are you, tell me about yourself
 - health_score: score, health check, how am I doing financially
 - fire_planning: retire, FIRE, financial independence, how long to retire
 - tax_advice: tax, 80C, form 16, save tax, old regime, new regime
@@ -114,6 +115,35 @@ def process_message(user_message: str, session_id: str = None) -> dict:
         f"Intent: {routing.get('intent')}, Feature: {routing.get('feature')}",
         routing.get("reasoning", "")
     )
+      # ── Handle 'about' intent directly — no agents needed ────────────────
+    if routing.get("intent") == "about":
+        final_response = (
+            "I am Artha-Saathi, an AI-powered personal finance mentor built for India. "
+            "I was built by Darpan for the ET GenAI Hackathon 2026.\n\n"
+            "Here is what I can do:\n"
+            "📊 *Money Health Score* — rate your financial health across 6 dimensions\n"
+            "🔮 *Future Shock* — show you the 5-year cost of doing nothing\n"
+            "🎯 *FIRE Planner* — calculate when you can retire and how to get there\n"
+            "💰 *Tax Wizard* — compare old vs new regime and find missed deductions\n"
+            "🎙 *Voice input* — speak in English or Hindi\n"
+            "💬 *WhatsApp* — same intelligence on WhatsApp\n\n"
+            "Just tell me your income and expenses to get started!"
+        )
+
+        history.append({"role": "user", "content": user_message})
+        history.append({"role": "assistant", "content": final_response})
+
+        save_session(session_id, new_profile, history)
+
+        return {
+            "session_id": session_id,
+            "response": final_response,
+            "intent": "about",
+            "feature": "none",
+            "profile_snapshot": {},
+            "calculations": {},
+            "guardrails": {"is_safe": True, "issues": []}
+        }
 
     # ── Step 2: Calculator Agent (pure Python — no API call) ───────────────
     feature      = routing.get("feature", "general")
