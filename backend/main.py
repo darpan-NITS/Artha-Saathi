@@ -31,6 +31,10 @@ app.include_router(future_shock_router, prefix="/api")
 app.include_router(whatsapp_router, prefix="/api")
 app.include_router(voice_router, prefix="/api")
 
+@app.get("/")
+def root():
+    return {"message": "Artha-Saathi API is running"}
+
 @app.get("/health")
 def health():
     return {"status": "ok", "project": "Artha-Saathi"}
