@@ -1,101 +1,156 @@
-# Artha-Saathi — AI Money Mentor
+# Artha-Saathi — AI that predicts your financial future and tells you what to fix
 
-> ET GenAI Hackathon 2026 · Problem Statement 9
+> **ET GenAI Hackathon 2026 · Problem Statement 9 · AI Money Mentor**
 
-**Artha-Saathi** makes financial planning as accessible as checking WhatsApp.
 95% of Indians have no financial plan. Financial advisors charge ₹25,000+/year
-and serve only HNIs. Artha-Saathi delivers equivalent intelligence for free,
-in a single conversation.
+and serve only HNIs. **Artha-Saathi delivers equivalent intelligence in under
+60 seconds — for free — in English, Hindi, and on WhatsApp.**
+
+---
+
+## Live Demo
+
+| | |
+|---|---|
+| **Web App** | https://artha-saathi.vercel.app |
+| **Backend API** | https://artha-saathi.onrender.com/health |
+| **WhatsApp** | Save +1 415 523 8886 → Send `join <your-sandbox-code>` |
+| **Demo Video** | [Watch 3-minute walkthrough](#) |
+
+---
+
+## Why This Stands Out
+
+- **Future Shock Engine** — shows the exact ₹ cost of doing nothing over 5 years, in 8 seconds
+- **5-agent audit trail** — every AI decision is logged and auditable, not a black box
+- **Deterministic math** — SIP, FIRE, and tax calculations use verified Indian formulas, not LLM guesses
+- **WhatsApp-native** — same intelligence available via WhatsApp with shortcut commands
 
 ---
 
 ## What It Does
 
-One conversation. Three powerful features.
+One conversation. Four powerful features.
 
 | Feature | What it gives you |
 |---|---|
-| **Money Health Score** | Comprehensive financial wellness score across 6 dimensions with personalized nudges |
-| **FIRE Path Planner** | Month-by-month retirement roadmap with live scenario modeling |
-| **Tax Wizard** | Old vs new regime comparison, deduction optimizer, missed savings finder |
+| **Future Shock** | 5-year dual timeline — cost of doing nothing vs following the plan |
+| **Money Health Score** | Financial wellness across 6 dimensions with radar chart |
+| **FIRE Path Planner** | Retirement corpus timeline with live scenario modeling |
+| **Tax Wizard** | Old vs new regime comparison with deduction optimizer |
 
 ---
 
 ## Architecture
 ```
-User → Orchestrator Agent
-         ├── Profile Agent      (extracts financial data from conversation)
-         ├── Calculator Agent   (SIP, FIRE, tax math — verified formulas)
-         ├── Advisor Agent      (India-specific personalized recommendations)
-         └── Guardrails Agent   (compliance check, SEBI disclaimer, audit trail)
+User Message (Web / WhatsApp / Voice)
+        │
+        ▼
+  Orchestrator Agent  ──────────────────────────────────┐
+  (intent + routing)                                     │
+        │                                                │
+        ├──► Profile Agent                               │
+        │    (extracts structured financial data)        │
+        │                                                │
+        ├──► Calculator Agent                            │
+        │    (deterministic SIP / FIRE / tax math)       │
+        │                                                │
+        ├──► Advisor Agent                               │
+        │    (India-specific recommendations)            │
+        │                                                │
+        └──► Guardrails Agent ──► Final Response         │
+             (compliance check,                          │
+              SEBI disclaimer,                           │
+              audit log to SQLite) ◄────────────────────┘
 ```
 
-Every agent decision is logged to SQLite and exposed via `/api/traces/{session_id}`.
+Every agent decision logged → `/api/traces/{session_id}`
 
 ---
 
 ## Tech Stack
 
-| Layer | Technology |
-|---|---|
-| Frontend | Next.js 14, TypeScript, Tailwind CSS, Recharts |
-| Backend | FastAPI (Python), SQLite |
-| AI | Groq API — Llama 3.3 70B |
-| Data | MFAPI.in (free Indian MF data) |
-| Deploy | Vercel (frontend) + Render (backend) |
+| Layer | Technology | Cost |
+|---|---|---|
+| Frontend | Next.js 14, TypeScript, Tailwind, Recharts | Free |
+| Backend | FastAPI, Python 3.11, SQLite | Free |
+| AI (agents) | Groq API — Llama 3.3 70B | Free tier |
+| Voice STT | Groq Whisper Large v3 | Free tier |
+| WhatsApp | Twilio Sandbox | Free |
+| MF Data | MFAPI.in | Free, no auth |
+| Deploy | Vercel + Render | Free tier |
 
-All tools are free or open source.
+**Total infrastructure cost: ₹0**
 
 ---
 
-## Setup
-
-### Prerequisites
-- Python 3.10+
-- Node.js 18+
-- Groq API key (free at console.groq.com)
-
-### Backend
+## Setup (3 commands)
 ```bash
-cd backend
-python -m venv venv
-venv\Scripts\activate        # Windows
-pip install -r requirements.txt
-# Add GROQ_API_KEY to backend/.env
+# Backend
+cd backend && pip install -r requirements.txt
+echo "GROQ_API_KEY=your_key" > .env
 uvicorn main:app --reload --port 8000
+
+# Frontend (new terminal)
+cd frontend && npm install && npm run dev
 ```
 
-### Frontend
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Open `http://localhost:3000`
+**Required API keys (all free):**
+- `GROQ_API_KEY` — console.groq.com
+- `TWILIO_ACCOUNT_SID` + `TWILIO_AUTH_TOKEN` + `TWILIO_WHATSAPP_NUMBER` — twilio.com
 
 ---
 
 ## API Endpoints
 
-| Endpoint | Description |
+| Endpoint | Method | Description |
+|---|---|---|
+| `/api/chat` | POST | Main conversation endpoint |
+| `/api/future-shock/{session_id}` | GET | 5-year dual projection |
+| `/api/health-score/{session_id}` | GET | Money Health Score |
+| `/api/fire/{session_id}` | GET | FIRE retirement plan |
+| `/api/fire/scenario` | POST | Live scenario modeling |
+| `/api/tax/{session_id}` | GET | Tax analysis |
+| `/api/tax/optimize` | POST | Live deduction optimizer |
+| `/api/voice-to-text` | POST | Groq Whisper STT |
+| `/api/whatsapp` | POST | Twilio webhook |
+| `/api/traces/{session_id}` | GET | Agent audit trail |
+
+---
+
+## WhatsApp Commands
+
+Save **+1 415 523 8886** and send `join <your-code>` to connect.
+
+| Command | Action |
 |---|---|
-| `POST /api/chat` | Main conversation endpoint |
-| `GET /api/health-score/{session_id}` | Money Health Score |
-| `GET /api/fire/{session_id}` | FIRE plan |
-| `POST /api/fire/scenario` | Real-time FIRE scenario modeling |
-| `GET /api/tax/{session_id}` | Tax analysis |
-| `POST /api/tax/optimize` | Live deduction optimization |
-| `GET /api/traces/{session_id}` | Agent audit trail |
+| `score` | Money Health Score |
+| `retire` | FIRE retirement summary |
+| `tax` | Tax regime recommendation |
+| `shock` | 5-year financial projection |
+| `help` | Show all commands |
+
+Or just chat naturally in English or Hindi.
 
 ---
 
 ## Impact Model
 
-See [`docs/impact_model.md`](docs/impact_model.md)
+See [`docs/impact_model.md`](docs/impact_model.md) for full calculations.
+
+| Metric | Value |
+|---|---|
+| Target users | 14 crore+ demat account holders |
+| Traditional advisor cost | ₹25,000+/year |
+| Artha-Saathi cost | ₹0 |
+| Time saved vs traditional | 97% (7 min vs 4–6 hours) |
+| Avg tax saving per user | ₹42,000/year |
+| TAM | ₹2.74 lakh crore |
 
 ---
 
-## Team
+## Submission
 
-Built for the ET GenAI Hackathon 2026 — PS-9: AI Money Mentor
+**Team:** Darpan Goswami · NIT Silchar · EIE 2nd Year
+**GitHub:** github.com/darpan-NITS/Artha-Saathi
+**Problem Statement:** PS-9 — AI Money Mentor
