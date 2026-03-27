@@ -60,3 +60,7 @@ def root():
 @app.get("/health")
 def health():
     return {"status": "ok", "project": "Artha-Saathi"}
+
+@app.get("/ping")
+def ping():
+    return "ok"
