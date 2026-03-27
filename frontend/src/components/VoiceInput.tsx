@@ -34,35 +34,52 @@ export default function VoiceInput({ onTranscript, disabled }: Props) {
       }
 
       recorder.onstop = async () => {
-        setState("processing")
-        const mimeType = recorder.mimeType
-        const blob     = new Blob(audioChunks.current, { type: mimeType })
-        const ext      = mimeType.includes("webm") ? "webm" : "mp4"
+  setState("processing")
+  const mimeType = recorder.mimeType
+  const blob = new Blob(audioChunks.current, { type: mimeType })
+  const ext = mimeType.includes("webm") ? "webm" : "mp4"
 
-        const formData = new FormData()
-        formData.append("audio", blob, `recording.${ext}`)
+  const formData = new FormData()
+  formData.append("audio", blob, `recording.${ext}`)
 
-        try {
-          const BASE_URL = process.env.NEXT_PUBLIC_API_URL ||
-                           "http://localhost:8000/api"
-          const res = await fetch(`${BASE_URL}/voice-to-text`, {
-            method: "POST",
-            body: formData,
-          })
-          const data = await res.json()
+  try {
+    const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000/api"
+    const res = await fetch(`${BASE_URL}/voice-to-text`, {
+      method: "POST",
+      body: formData,
+    })
 
-          if (data.success && data.text?.trim()) {
-            onTranscript(data.text.trim())
-          } else {
-            setError("Could not understand audio. Please try again.")
-          }
-        } catch {
-          setError("Voice processing failed. Please try again.")
-        } finally {
-          setState("idle")
-          streamRef.current?.getTracks().forEach(t => t.stop())
-        }
+    if (!res.ok) {
+      const errorText = await res.text()
+      console.error("Voice API error:", res.status, errorText)
+      setError(`Server error ${res.status}. Please try again.`)
+      setState("idle")
+      return
+    }
+
+    const data = await res.json()
+    console.log("Transcription result:", data)
+
+    if (data.success && data.text?.trim()) {
+      const transcript = data.text.trim().toLowerCase()
+      const HALLUCINATIONS = ["thank you", "thanks", "bye", "goodbye",
+                              "you're welcome", "okay", "ok", ""]
+      if (HALLUCINATIONS.some(h => transcript === h || transcript === h + ".")) {
+        setError("Couldn't catch that. Please speak clearly for 2–3 seconds.")
+      } else {
+        onTranscript(data.text.trim())
       }
+    } else {
+      setError(data.error || "Could not understand. Please try again.")
+    }
+  } catch (err) {
+    console.error("Voice fetch error:", err)
+    setError("Connection failed. Check your internet and try again.")
+  } finally {
+    setState("idle")
+    streamRef.current?.getTracks().forEach(t => t.stop())
+  }
+}
 
       recorder.start()
       setState("recording")
