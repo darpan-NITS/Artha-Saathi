@@ -13,7 +13,6 @@ async def voice_to_text(audio: UploadFile = File(...)):
     try:
         audio_bytes = await audio.read()
 
-        # Reject audio under 10KB — too short, causes hallucinations
         if len(audio_bytes) < 10000:
             return JSONResponse(
                 status_code=400,
@@ -26,12 +25,11 @@ async def voice_to_text(audio: UploadFile = File(...)):
         transcription = client.audio.transcriptions.create(
             file=(audio.filename or "recording.webm", audio_bytes),
             model="whisper-large-v3",
-            response_format="verbose_json",  # returns object, not string
-            prompt="The user is speaking in English or Hindi about personal finance, income, expenses, investments, tax, SIP, mutual funds."
+            response_format="json",
+            prompt="English or Hindi personal finance: income expenses investments tax SIP mutual funds"
         )
 
-        # Extract text from response object
-        text = transcription.text if hasattr(transcription, "text") else str(transcription)
+        text = transcription.text
 
         return {"text": text, "success": True}
 
