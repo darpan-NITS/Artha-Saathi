@@ -10,23 +10,31 @@ client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 @router.post("/voice-to-text")
 async def voice_to_text(audio: UploadFile = File(...)):
-    """
-    Receives audio blob from frontend mic,
-    transcribes via Groq Whisper, returns text.
-    Supports Hindi and English automatically.
-    """
     try:
         audio_bytes = await audio.read()
-        
+
+        # Reject audio under 10KB — too short, causes hallucinations
+        if len(audio_bytes) < 10000:
+            return JSONResponse(
+                status_code=400,
+                content={
+                    "error": "Audio too short. Please speak for at least 2 seconds.",
+                    "success": False
+                }
+            )
+
         transcription = client.audio.transcriptions.create(
-            file=(audio.filename or "audio.webm", audio_bytes),
+            file=(audio.filename or "recording.webm", audio_bytes),
             model="whisper-large-v3",
-            language=None,  # auto-detect Hindi or English
-            response_format="text"
+            response_format="verbose_json",  # returns object, not string
+            prompt="The user is speaking in English or Hindi about personal finance, income, expenses, investments, tax, SIP, mutual funds."
         )
-        
-        return {"text": transcription, "success": True}
-    
+
+        # Extract text from response object
+        text = transcription.text if hasattr(transcription, "text") else str(transcription)
+
+        return {"text": text, "success": True}
+
     except Exception as e:
         return JSONResponse(
             status_code=500,
