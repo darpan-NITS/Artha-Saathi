@@ -14,7 +14,7 @@ and serve only HNIs. **Artha-Saathi delivers equivalent intelligence in under
 |---|---|
 | **Web App** | https://artha-saathi.vercel.app |
 | **Backend API** | https://artha-saathi.onrender.com/health |
-| **WhatsApp** | Save +1 415 523 8886 → Send `join <your-sandbox-code>` |
+| **WhatsApp** | Save +1 415 523 8886 → Send `join <elephant-home>` |
 | **Demo Video** | [Watch 3-minute walkthrough](#) |
 
 ---
