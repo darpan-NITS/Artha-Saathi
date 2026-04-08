@@ -13,16 +13,36 @@ from routes.future_shock import router as future_shock_router
 from routes.whatsapp import router as whatsapp_router
 from routes.voice import router as voice_router
 import asyncio
+import httpx
+import logging
 from contextlib import asynccontextmanager
+
+logger = logging.getLogger(__name__)
+
+# The deployed Render URL — used for the self-ping keep-alive
+BACKEND_URL = os.getenv("BACKEND_URL", "https://artha-saathi.onrender.com")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Init DB at startup (better placement)
+    # Init DB at startup
     init_db()
 
     async def keep_alive():
+        """
+        Pings this server's /ping endpoint every 14 minutes (840s)
+        to prevent Render's free tier from spinning it down.
+        Render spins down after 15 min of inactivity, so 14 min is safe.
+        """
+        await asyncio.sleep(30)  # brief startup delay before first ping
         while True:
-            await asyncio.sleep(840)
+            try:
+                async with httpx.AsyncClient(timeout=10) as client:
+                    resp = await client.get(f"{BACKEND_URL}/ping")
+                    logger.info(f"Keep-alive ping → {resp.status_code}")
+            except Exception as e:
+                logger.warning(f"Keep-alive ping failed: {e}")
+            await asyncio.sleep(840)  # wait 14 minutes before next ping
+
     asyncio.create_task(keep_alive())
 
     yield
