@@ -1,26 +1,9 @@
 import type { Metadata } from "next";
-import {
-  Outfit,
-  DM_Serif_Display,
-  JetBrains_Mono,
-} from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
-const outfit = Outfit({
-  subsets: ["latin"],
-  variable: "--font-outfit",
-});
-
-const dmSerif = DM_Serif_Display({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-dm-serif",
-});
-
-const jetbrains = JetBrains_Mono({
-  subsets: ["latin"],
-  variable: "--font-jetbrains",
-});
+const geistSans = Geist({ variable: "--font-geist-sans", subsets: ["latin"], }); 
+const geistMono = Geist_Mono({ variable: "--font-geist-mono", subsets: ["latin"], });
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -35,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${outfit.variable} ${dmSerif.variable}${jetbrains.variable}  antialiased`}
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
         {children}
       </body>
